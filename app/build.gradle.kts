@@ -56,6 +56,8 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("io.coil-kt:coil:2.0.0-rc02")
     implementation("com.github.bumptech.glide:glide:4.12.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     testImplementation("junit:junit:4.13.2")
     kapt("com.github.bumptech.glide:compiler:4.12.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
