@@ -9,12 +9,18 @@
         android:id="@+id/gifGalleryFragment"
         android:name="com.MartinBrnak.mediahub.GifGalleryFragment"
         android:label="GifGalleryFragment"
-        tools:layout="@layout/fragment_giphy_gallery"
-        />
+        tools:layout="@layout/fragment_giphy_gallery">
+        <action
+            android:id="@+id/show_preview_overlay"
+            app:destination="@id/previewFragment" />
+    </fragment>
     <fragment
         android:id="@+id/previewFragment"
-        android:name="PreviewFragment"
+        android:name="com.MartinBrnak.mediahub.PreviewFragment"
         android:label="PreviewFragment"
-        tools:layout="@layout/preview_overlay"
-        />
+        tools:layout="@layout/preview_overlay">
+        <argument
+            android:name="gifUrl"
+            app:argType="string" />
+    </fragment>
 </navigation>

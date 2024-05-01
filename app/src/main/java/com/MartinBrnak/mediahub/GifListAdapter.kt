@@ -13,27 +13,26 @@ import com.bumptech.glide.Glide
 class GifViewHolder(
     private val binding: ListItemGalleryBinding,
     private val context: Context,
-    private val onLongClickListener: (position: Int) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    init{
-        binding.root.setOnLongClickListener {
-            onLongClickListener(adapterPosition)
-            true
-        }
-    }
-    fun bind(galleryItem: GalleryItem) {
+
+    fun bind(galleryItem: GalleryItem, onGifHold: () -> Unit) {
         Glide.with(context)
             .load(galleryItem.images.original.url)
             .placeholder(R.drawable.ic_launcher_background)
             .into(binding.itemImageView)
+
+
+        binding.root.setOnClickListener{
+            onGifHold()
+        }
     }
 }
 
 class GifListAdapter(
     private val galleryItems: List<GalleryItem>,
     private val context: Context,
-    private val onLongClickListener: (position: Int) -> Unit
+    private val onGifHold: (GalleryItem) -> Unit
 ) : RecyclerView.Adapter<GifViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -41,12 +40,14 @@ class GifListAdapter(
     ): GifViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ListItemGalleryBinding.inflate(inflater, parent, false)
-        return GifViewHolder(binding, context, onLongClickListener)
+        return GifViewHolder(binding, context)
     }
 
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
         val item = galleryItems[position]
-        holder.bind(item)
+        holder.bind(item){
+            onGifHold(item)
+        }
     }
 
     override fun getItemCount() = galleryItems.size

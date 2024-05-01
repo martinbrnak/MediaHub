@@ -12,10 +12,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.MartinBrnak.mediahub.databinding.FragmentGiphyGalleryBinding
-import com.MartinBrnak.mediahub.giphyapi.GalleryItem
-import com.bumptech.glide.Glide
+import com.MartinBrnak.mediahub.GifGalleryFragmentDirections
 import kotlinx.coroutines.launch
 class GifGalleryFragment : Fragment() {
     private var _binding: FragmentGiphyGalleryBinding? = null
@@ -44,8 +44,12 @@ class GifGalleryFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gifGalleryViewModel.galleryItems.collect { items ->
-                    binding.giphyGrid.adapter = GifListAdapter(items, requireContext()) {
+                    val gifListAdapter = GifListAdapter(items, requireContext()) { clickedItem ->
+                        findNavController().navigate(
+                            GifGalleryFragmentDirections.showPreviewOverlay(clickedItem.images.original.url) // Pass URL as argument
+                        )
                     }
+                    binding.giphyGrid.adapter = gifListAdapter
                 }
             }
         }
