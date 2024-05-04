@@ -25,12 +25,12 @@ import com.google.cloud.videointelligence.v1.VideoIntelligenceServiceClient
 import com.google.protobuf.ByteString
 import java.io.File
 import java.io.FileInputStream
+import java.io.InputStream
 
 class PreviewFragment : Fragment() {
 
     private var _binding: PreviewOverlayBinding? = null
     private val binding get() = _binding!!
-    val API_KEY : AccessToken = '8787a8ab9a9b9ace57482b55f2868258091f5392'
 
 
     override fun onCreateView(
@@ -67,20 +67,23 @@ class PreviewFragment : Fragment() {
 
             // Check if the GIF file exists
             if (gifFile.exists()) {
-                // Create a Video object and set its content to the GIF file
-                val videoContent: ByteString = ByteString.readFrom(FileInputStream(gifFile))
-                val video = MediaStore.Video(videoContent)
+                // Open the JSON key file as an input stream
+                val inputStream: InputStream = requireContext().assets.open("cs501-app-8787a8ab9a9b.json")
+                // Read the contents of the input stream into a ByteArray
+                val byteArray: ByteArray = inputStream.readBytes()
 
+                // Convert the ByteArray to a String (assuming the JSON key is encoded as UTF-8)
+                val jsonString: String = byteArray.toString(Charsets.UTF_8)
 
                 // Create a VideoIntelligenceServiceClient using the authentication credentials
-                val serviceClient = VideoIntelligenceServiceClient.API_KEY
+                val serviceClient = VideoIntelligenceServiceClient.create()
 
                 // Use the client to make an API request to analyze the video
                 val request = AnnotateVideoRequest.newBuilder()
-                    .setInputContent(video)
+                    .setInputContent(ByteString.readFrom(FileInputStream(gifFile)))
                     .addFeatures(Feature.LABEL_DETECTION)
                     .build()
-                val response = serviceClient.annotateVideo(request)
+                val response = serviceClient.annotateVideoAsync(request)
 
                 // Handle the response to extract the detected objects or any other relevant information
                 // For example, you can log the response or display it in a toast
@@ -101,37 +104,6 @@ class PreviewFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun analyzeGifWithAPI(gifFile: File) {
-        try {
-            // Set up the credentials provider using the API key
-            val credentials = GoogleCredentials.create(API_KEY).createScoped("https://www.googleapis.com/auth/cloud-platform")
-            val credentialsProvider = FixedCredentialsProvider.create(credentials)
-
-            // Create the Video Intelligence client
-            val videoIntelligenceClient = VideoIntelligenceServiceClient.create(VideoIntelligenceServiceSettings.newBuilder().setCredentialsProvider(credentialsProvider).build())
-
-            // Read the GIF file as an input stream
-            val inputStream: InputStream = FileInputStream(gifFile)
-
-            // Create the request with the input content (GIF file)
-            val request = AnnotateVideoRequest.newBuilder()
-                .setInputContent(com.google.protobuf.ByteString.readFrom(inputStream))
-                .build()
-
-            // Perform the object tracking annotation on the GIF file
-            val response = videoIntelligenceClient.annotateVideo(request)
-
-            // Process the response (e.g., extract objects detected)
-            // You can access the response data using response.annotationResults
-            // This function will handle the response data and display it (e.g., in a Toast or log message)
-            processApiResponse(response)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Failed to analyze GIF with API", Toast.LENGTH_SHORT).show()
-        }
     }
 
     // You can add additional methods here to update the content of the preview fragment
