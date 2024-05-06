@@ -46,7 +46,6 @@ class GifViewHolder(
                         isLongPress = true
                         Toast.makeText(context, "Long Press!", LENGTH_LONG).show()
                         showGifPlayerAlertDialog(galleryItem.images.original.url)
-                        //onGifHold(galleryItem)
                     }, longPressThreshold.toLong())
                     true
                 }
@@ -61,6 +60,9 @@ class GifViewHolder(
                         dialog.dismiss()
                     }
                     isLongPress = false
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
                     true
                 }
                 MotionEvent.ACTION_CANCEL -> {

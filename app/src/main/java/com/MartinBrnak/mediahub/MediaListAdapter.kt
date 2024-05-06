@@ -1,15 +1,18 @@
 package com.MartinBrnak.mediahub
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.MartinBrnak.mediahub.databinding.HomeFragmentBinding
+import com.MartinBrnak.mediahub.databinding.MediaItemBinding
 import com.bumptech.glide.Glide
 import java.util.UUID
 
 
-class MediaHolder(
-    private val binding: HomeFragmentBinding
+class MediaViewHolder(
+    private val binding: MediaItemBinding,
+    private val context: Context
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(media: Media, onMediaClicked: (mediaId: UUID) -> Unit) {
         /*Glide.with(context)
@@ -28,18 +31,19 @@ class MediaHolder(
 
 class MediaListAdapter(
     private val mediaAll: List<Media>,
+    private val context: Context,
     private val onMediaClicked: (mediaId: UUID) -> Unit
-) : RecyclerView.Adapter<MediaHolder>() {
+) : RecyclerView.Adapter<MediaViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): MediaHolder {
+    ): MediaViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = HomeFragmentBinding.inflate(inflater, parent, false)
-        return MediaHolder(binding)
+        val binding = MediaItemBinding.inflate(inflater, parent, false)
+        return MediaViewHolder(binding, context)
     }
 
-    override fun onBindViewHolder(holder: MediaHolder, position: Int) {
+    override fun onBindViewHolder(holder: MediaViewHolder, position: Int) {
         val media = mediaAll[position]
         holder.bind(media, onMediaClicked)
     }
