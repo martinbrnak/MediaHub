@@ -5,6 +5,48 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/gifGalleryFragment">
 
+    <action
+        android:id="@+id/nav_explore"
+        app:destination="@id/gifGalleryFragment"
+        ></action>
+
+    <action
+        android:id="@+id/nav_home"
+        app:destination="@id/HomeFragment"></action>
+    <action
+        android:id="@+id/nav_profile"
+        app:destination="@id/ProfileFragment">
+    </action>
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.MartinBrnak.mediahub.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/home_fragment">
+        <action
+            android:id="@+id/showMediaDetail"
+            app:destination="@id/mediaDetailFragment"
+            ></action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/mediaDetailFragment"
+        android:name="com.MartinBrnak.mediahub.MediaDetailFragment"
+        android:label="MediaDetailFragment"
+        tools:layout="@layout/media_detail_fragment"
+        >
+        <argument
+            android:name="mediaId"
+            app:argType="java.util.UUID" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ProfileFragment"
+        android:name="com.MartinBrnak.mediahub.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/profile_fragment">
+    </fragment>
+
     <fragment
         android:id="@+id/gifGalleryFragment"
         android:name="com.MartinBrnak.mediahub.GifGalleryFragment"

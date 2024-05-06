@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/giphy_grid"
+        android:id="@+id/media_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -18,12 +18,5 @@
 
     <!-- Container for the preview overlay -->
 
-    <FrameLayout
-        android:id="@+id/previewContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" >
-    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
