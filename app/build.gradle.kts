@@ -6,6 +6,8 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
 }
 
+
+
 android {
     namespace = "com.MartinBrnak.mediahub"
     compileSdk = 34
@@ -22,14 +24,6 @@ android {
     packaging {
         resources.excludes.add("META-INF/*")
     }
-
-
-
-
-
-
-
-
 
     buildTypes {
         release {
@@ -79,6 +73,10 @@ dependencies {
     implementation("io.grpc:grpc-core:1.62.2")
     implementation("io.grpc:grpc-stub:1.62.2")
     testImplementation("junit:junit:4.13.2")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.github.Abhay-cloud:Instagram-Video-Downloader-Library:0.2.3"){exclude(group = "com.android.volley")}
+    implementation("com.github.SanjayDevTech:instautils:1.2.3")
+    implementation("com.android.volley:volley:1.2.1")
     kapt("androidx.room:room-compiler:2.6.1")
     kapt("com.github.bumptech.glide:compiler:4.12.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

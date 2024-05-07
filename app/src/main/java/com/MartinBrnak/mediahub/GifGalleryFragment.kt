@@ -80,7 +80,7 @@ class GifGalleryFragment : Fragment() {
                 gifGalleryViewModel.galleryItems.collect { items ->
                     val gifListAdapter = GifListAdapter(items, requireContext()) { clickedItem ->
                         findNavController().navigate(
-                            GifGalleryFragmentDirections.showPreviewOverlay(clickedItem.images.original.url) // Pass URL as argument
+                            GifGalleryFragmentDirections.showGifDetail(clickedItem.images.original.url) // Pass URL as argument
                         )
                     }
                     binding.giphyGrid.adapter = gifListAdapter

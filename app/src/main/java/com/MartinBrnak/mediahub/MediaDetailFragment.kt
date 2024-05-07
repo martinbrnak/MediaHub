@@ -3,9 +3,12 @@ package com.MartinBrnak.mediahub
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -50,12 +53,34 @@ class MediaDetailFragment : Fragment() {
                 val media = mediaRepository.getMedia(args.mediaId)
                 val downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val mediaFile = File(downloadDirectory, "${media.id}.${media.format.lowercase()}")
+                var descriptionEditText = descriptionEditText
                 Glide.with(requireContext())
                     .asGif()
                     .load(mediaFile)
                     .placeholder(R.drawable.loading_white)
                     .error(R.drawable.magnifying_glass_icon)
                     .into(mediaImageView)
+                // Set the initial description from media.description
+                descriptionEditText.setText(media.description)
+
+                // Set an OnTextChangeListener on the EditText
+                descriptionEditText.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        // No action needed
+                    }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        // Update the media.description whenever the text changes
+                        media.description = s.toString()
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            mediaRepository.updateMedia(media)
+                        }
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+                        // No action needed
+                    }
+                })
 
                 exportButton.setOnClickListener {
                     val shareIntent = Intent(Intent.ACTION_SEND).apply {

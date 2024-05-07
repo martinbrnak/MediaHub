@@ -48,7 +48,10 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val mediaRepository = MediaRepository.get()
-        val mediaListAdapter = MediaListAdapter(requireContext(), emptyList()) {}
+        val mediaListAdapter = MediaListAdapter(requireContext(), emptyList()) { mediaId ->
+            val action = HomeFragmentDirections.showMediaDetail(mediaId)
+            findNavController().navigate(action)
+        }
 
         binding.mediaGrid.layoutManager = GridLayoutManager(context, 2)
         binding.mediaGrid.adapter = mediaListAdapter

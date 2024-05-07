@@ -53,14 +53,14 @@
         android:label="GifGalleryFragment"
         tools:layout="@layout/fragment_giphy_gallery">
         <action
-            android:id="@+id/show_preview_overlay"
-            app:destination="@id/previewFragment" />
+            android:id="@+id/show_gif_detail"
+            app:destination="@id/gifDetailFragment" />
     </fragment>
     <fragment
-        android:id="@+id/previewFragment"
-        android:name="com.MartinBrnak.mediahub.PreviewFragment"
-        android:label="PreviewFragment"
-        tools:layout="@layout/preview_overlay">
+        android:id="@+id/gifDetailFragment"
+        android:name="com.MartinBrnak.mediahub.GifDetailFragment"
+        android:label="gifDetailFragment"
+        tools:layout="@layout/gif_detail_fragment">
         <argument
             android:name="gifUrl"
             app:argType="string" />

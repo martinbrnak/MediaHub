@@ -19,10 +19,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
-import com.MartinBrnak.mediahub.R
-import com.MartinBrnak.mediahub.databinding.PreviewOverlayBinding
+import com.MartinBrnak.mediahub.databinding.GifDetailFragmentBinding
 import com.bumptech.glide.Glide
-import com.google.auth.oauth2.AccessToken
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.videointelligence.v1.AnnotateVideoRequest
 import com.google.cloud.videointelligence.v1.Feature
@@ -35,12 +33,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
-import java.io.InputStream
 import java.util.UUID
 
-class PreviewFragment : Fragment() {
+class GifDetailFragment : Fragment() {
 
-    private var _binding: PreviewOverlayBinding? = null
+    private var _binding: GifDetailFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -48,7 +45,7 @@ class PreviewFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = PreviewOverlayBinding.inflate(inflater, container, false)
+        _binding = GifDetailFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -69,7 +66,7 @@ class PreviewFragment : Fragment() {
     @SuppressLint("Range")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val args: PreviewFragmentArgs by navArgs()
+        val args: GifDetailFragmentArgs by navArgs()
         val imageUrl = args.gifUrl
         val imageView = view.findViewById<ImageView>(R.id.previewImageView)
         var button: Button = view.findViewById(R.id.downloadButton)
@@ -118,10 +115,16 @@ class PreviewFragment : Fragment() {
                         }
                     }
 
-                    // Download is complete, process the file
+                    // Download is complete
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "GIF download complete", Toast.LENGTH_SHORT).show()
+                    }
                     val downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     val gifFile = File(downloadDirectory, "$mediaId.gif")
                     if (gifFile.exists()) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Analyzing GIF...", Toast.LENGTH_SHORT).show()
+                        }
                         val detectedLabels = processDownloadedFile(gifFile)
                         newMedia.description = "Detected Labels: ${detectedLabels.joinToString(", ")}"
                         mediaRepository.updateMedia(newMedia)
@@ -221,4 +224,6 @@ class PreviewFragment : Fragment() {
         }
         return emptyList()
     }
+
+
 }
