@@ -30,6 +30,7 @@ android {
 
 
 
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -74,6 +75,9 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("com.google.cloud:google-cloud-video-intelligence:2.41.0")
+    implementation("io.grpc:grpc-okhttp:1.62.2")
+    implementation("io.grpc:grpc-core:1.62.2")
+    implementation("io.grpc:grpc-stub:1.62.2")
     testImplementation("junit:junit:4.13.2")
     kapt("androidx.room:room-compiler:2.6.1")
     kapt("com.github.bumptech.glide:compiler:4.12.0")

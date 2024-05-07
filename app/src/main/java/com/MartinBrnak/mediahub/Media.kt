@@ -7,8 +7,8 @@ import java.util.UUID
 @Entity
 data class Media(
     @PrimaryKey val id: UUID,
-    val title: String,
-    val description: String,
+    var title: String,
+    var description: String,
     val format: String,
     val url: String
 )

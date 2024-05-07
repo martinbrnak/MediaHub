@@ -51,7 +51,7 @@ class HomeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mediaListViewModel.mediaAll.collect { mediaAll ->
                     binding.mediaGrid.adapter =
-                        MediaListAdapter(mediaAll) { mediaId ->
+                        MediaListAdapter(requireContext(), mediaAll) { mediaId ->
                             findNavController().navigate(
                                 HomeFragmentDirections.showMediaDetail(mediaId)
                             )

@@ -1,19 +1,22 @@
 <!-- preview_overlay.xml -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
-    >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Your ImageView to display the GIF -->
     <ImageView
-        android:id="@+id/previewImageView"
-        android:layout_width="300dp"
-        android:layout_height="500dp"
-        android:layout_gravity="center"
-        android:adjustViewBounds="true"
-        />
+        android:id="@+id/mediaImageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter" />
 
+    <Button
+        android:id="@+id/exportButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Export" />
 
-
-</FrameLayout>
+</LinearLayout>

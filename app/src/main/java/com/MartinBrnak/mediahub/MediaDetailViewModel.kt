@@ -10,8 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class MediaDetailViewModel(mediaId: UUID) : ViewModel() {
-    private val mediaRepository = MediaRepository.get()
+class MediaDetailViewModel(mediaId: UUID, mediaRepository: MediaRepository) : ViewModel() {
 
     private val _media: MutableStateFlow<Media?> = MutableStateFlow(null)
     val media: StateFlow<Media?> = _media.asStateFlow()
@@ -35,6 +34,10 @@ class MediaDetailViewModelFactory(
     private val mediaId: UUID
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MediaDetailViewModel(mediaId) as T
+        if (modelClass.isAssignableFrom(MediaDetailViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MediaDetailViewModel(mediaId, MediaRepository.get()) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

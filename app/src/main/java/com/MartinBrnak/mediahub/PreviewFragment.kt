@@ -1,5 +1,6 @@
 package com.MartinBrnak.mediahub
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -16,6 +17,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.MartinBrnak.mediahub.R
 import com.MartinBrnak.mediahub.databinding.PreviewOverlayBinding
@@ -25,8 +27,12 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.videointelligence.v1.AnnotateVideoRequest
 import com.google.cloud.videointelligence.v1.Feature
 import com.google.cloud.videointelligence.v1.VideoIntelligenceServiceClient
+import com.google.cloud.videointelligence.v1.VideoIntelligenceServiceSettings
 import com.google.protobuf.ByteString
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -36,7 +42,6 @@ class PreviewFragment : Fragment() {
 
     private var _binding: PreviewOverlayBinding? = null
     private val binding get() = _binding!!
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,26 +61,24 @@ class PreviewFragment : Fragment() {
                 val receivedDownloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                 if (receivedDownloadId == downloadId) {
                     // The download with the specified ID is complete
-                    handleDownloadCompletion()
                 }
             }
         }
     }
 
+    @SuppressLint("Range")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val args: PreviewFragmentArgs by navArgs()
         val imageUrl = args.gifUrl
         val imageView = view.findViewById<ImageView>(R.id.previewImageView)
-        var button : Button = view.findViewById(R.id.downloadButton)
+        var button: Button = view.findViewById(R.id.downloadButton)
 
-
-        button.setOnClickListener{
+        button.setOnClickListener {
             val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             val downloadUri = Uri.parse(imageUrl)
             val mediaRepository = MediaRepository.get()
             val mediaId = UUID.randomUUID()
-
 
             val request = DownloadManager.Request(downloadUri)
                 .setTitle("Downloading GIF")
@@ -93,10 +96,43 @@ class PreviewFragment : Fragment() {
                 format = "GIF", // Set the format to GIF
                 url = imageUrl // Set the URL of the GIF
             )
-            // Callback to process the downloaded file
-            suspend{mediaRepository.
-                addMedia(newMedia)
+
+            // Launch a coroutine to insert the media into the database
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    mediaRepository.addMedia(newMedia)
+
+                    // Wait for the download to complete
+                    var downloadComplete = false
+                    while (!downloadComplete) {
+                        val query = DownloadManager.Query().setFilterById(downloadId)
+                        val cursor = downloadManager.query(query)
+                        if (cursor.moveToFirst()) {
+                            val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                            downloadComplete = status == DownloadManager.STATUS_SUCCESSFUL
+                        }
+                        cursor.close()
+
+                        if (!downloadComplete) {
+                            delay(1000) // Wait for 1 second before checking again
+                        }
+                    }
+
+                    // Download is complete, process the file
+                    val downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val gifFile = File(downloadDirectory, "$mediaId.gif")
+                    if (gifFile.exists()) {
+                        val detectedLabels = processDownloadedFile(gifFile)
+                        newMedia.description = "Detected Labels: ${detectedLabels.joinToString(", ")}"
+                        mediaRepository.updateMedia(newMedia)
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "GIF file not found", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
+
         }
 
         // Load the GIF using the imageUrl
@@ -124,49 +160,65 @@ class PreviewFragment : Fragment() {
         _binding = null
     }
 
-    private fun handleDownloadCompletion() {
-        // The download is complete, proceed with further processing
-        val gifFile = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "image.gif")
+
+
+    private suspend fun processDownloadedFile(gifFile: File): List<String> {
+        Log.d("VideoAnalysis", "Processing downloaded file: ${gifFile.absolutePath}")
+
         if (gifFile.exists()) {
-            // File exists, proceed with analyzing the downloaded file or any other processing
-            // For example, you can initiate the analysis using the Video Intelligence API here
-            processDownloadedFile(gifFile)
-            Toast.makeText(context, "Download Complete!", Toast.LENGTH_SHORT).show()
-        } else {
-            // File not found
-            Toast.makeText(context, "GIF file not found", Toast.LENGTH_SHORT).show()
-        }
-    }
+            try {
+                Log.d("VideoAnalysis", "Loading JSON key file")
+                Log.d("We will open:", requireContext().assets.open("cs501-app-8787a8ab9a9b.json").toString())
+                // Load the JSON key file from assets
+                val jsonInputStream = requireContext().assets.open("cs501-app-8787a8ab9a9b.json")
+                Log.d("JsonInput", jsonInputStream.toString())
+                val credentials = GoogleCredentials.fromStream(jsonInputStream)
 
-    private fun processDownloadedFile(gifFile: File) {
-        if (gifFile.exists()) {
-            // Open the JSON key file as an input stream
-            val inputStream: InputStream = requireContext().assets.open("cs501-app-8787a8ab9a9b.json")
-            // Read the contents of the input stream into a ByteArray
-            val byteArray: ByteArray = inputStream.readBytes()
+                Log.d("VideoAnalysis", "Creating VideoIntelligenceServiceClient")
+                // Create a VideoIntelligenceServiceClient using the authentication credentials
+                val serviceClient = VideoIntelligenceServiceClient.create(
+                    VideoIntelligenceServiceSettings.newBuilder()
+                        .setCredentialsProvider { credentials }
+                        .build()
+                )
 
-            // Convert the ByteArray to a String (assuming the JSON key is encoded as UTF-8)
-            val jsonString: String = byteArray.toString(Charsets.UTF_8)
+                Log.d("VideoAnalysis", "Building AnnotateVideoRequest")
+                // Use the client to make an API request to analyze the video
+                val request = AnnotateVideoRequest.newBuilder()
+                    .setInputContent(ByteString.readFrom(FileInputStream(gifFile)))
+                    .addFeatures(Feature.LABEL_DETECTION)
+                    .build()
 
-            // Create a VideoIntelligenceServiceClient using the authentication credentials
-            val serviceClient = VideoIntelligenceServiceClient.create()
+                Log.d("VideoAnalysis", "Sending request to VideoIntelligenceServiceClient")
+                // Send the request and wait for the response
+                val response = serviceClient.annotateVideoAsync(request).get()
 
-            // Use the client to make an API request to analyze the video
-            val request = AnnotateVideoRequest.newBuilder()
-                .setInputContent(ByteString.readFrom(FileInputStream(gifFile)))
-                .addFeatures(Feature.LABEL_DETECTION)
-                .build()
-            val response = serviceClient.annotateVideoAsync(request)
-            Toast.makeText(context, "Analyzed!!", Toast.LENGTH_SHORT).show()
-            Toast.makeText(context, "Response: $response", Toast.LENGTH_LONG).show()
-            // Handle the response to extract the detected objects or any other relevant information
-            // For example, you can log the response or display it in a toast
-            Log.d("VideoAnalysis", "Response: $response")
+                // Handle the response and extract the detected labels
+                val labels = response.annotationResultsList.flatMap { result ->
+                    result.segmentLabelAnnotationsList.map { it.entity.description }
+                }
+
+                // Log the detected labels
+                Log.d("VideoAnalysis", "Detected Labels: $labels")
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Analysis Complete!", Toast.LENGTH_SHORT).show()
+                }
+                return labels
+            } catch (e: Exception) {
+                // Handle any errors that occur during the analysis
+                Log.e("VideoAnalysis", "Error during video analysis", e)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Analysis Failed!", Toast.LENGTH_SHORT).show()
+                }
+            }
         } else {
             // GIF file does not exist
-            Toast.makeText(context, "GIF file not found", Toast.LENGTH_SHORT).show()
+            Log.e("VideoAnalysis", "GIF file not found: ${gifFile.absolutePath}")
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "GIF file not found", Toast.LENGTH_SHORT).show()
+            }
         }
+        return emptyList()
     }
-
-    // You can add additional methods here to update the content of the preview fragment
 }
