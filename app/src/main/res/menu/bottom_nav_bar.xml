@@ -13,6 +13,6 @@
     <item
         android:id="@+id/ImportFragment"
         android:title="Import"
-        android:icon="@drawable/profile_icon"/>
+        android:icon="@drawable/import_icon"/>
 
 </menu>

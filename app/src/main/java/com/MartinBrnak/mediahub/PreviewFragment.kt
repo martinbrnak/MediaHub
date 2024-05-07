@@ -138,7 +138,7 @@ class PreviewFragment : Fragment() {
         // Load the GIF using the imageUrl
         Glide.with(requireContext())
             .load(imageUrl)
-            .placeholder(R.drawable.ic_launcher_background)
+            .placeholder(R.drawable.loading_white)
             .into(imageView)
     }
 

@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">MediaHub</string>
     <string name="welcome_message">Welcome to MediaHub! This is where your downloaded content will appear. Go to Explore or Import to add more media.</string>
+    <string name="link_import_title">Import Link</string>
+    <string name="link_import_hint">Enter TikTok or Instagram link</string>
+    <string name="import_button_text">Import</string>
+    <string name="link_import_description">Provide a valid TikTok or Instagram link to download the video within the app.</string>
 
 </resources>

@@ -31,7 +31,7 @@ class GifViewHolder(
     fun bind(galleryItem: GalleryItem, onGifHold: () -> Unit) {
         Glide.with(context)
             .load(galleryItem.images.original.url)
-            .placeholder(R.drawable.ic_launcher_background)
+            .placeholder(R.drawable.loading_white)
             .into(binding.itemImageView)
 
         /*binding.root.setOnClickListener{
@@ -80,7 +80,7 @@ class GifViewHolder(
         val gifView = dialogLayout.findViewById<ImageView>(R.id.dialogImageView)
         Glide.with(context)
             .load(imageUrl)
-            .placeholder(R.drawable.ic_launcher_background)
+            .placeholder(R.drawable.loading_white)
             .into(gifView)
 
         val builder = AlertDialog.Builder(context)

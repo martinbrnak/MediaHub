@@ -6,20 +6,47 @@
     android:padding="16dp"
     >
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/link_import_title"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="50dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/link_import_description"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="50dp"
+        />
+
     <EditText
         android:id="@+id/edit_text_link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter TikTok or Instagram link"
+        android:hint="@string/link_import_hint"
         android:inputType="textUri"
         android:autofillHints="URL"
-        android:textColor="@color/white"
-        />
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
+        android:background="@color/light_gray"
+        android:padding="12dp" />
 
     <Button
         android:id="@+id/button_import"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Import" />
+        android:text="@string/import_button_text"
+        android:backgroundTint="@color/blue"
+        android:textColor="@color/white"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="80dp" />
 
 </LinearLayout>

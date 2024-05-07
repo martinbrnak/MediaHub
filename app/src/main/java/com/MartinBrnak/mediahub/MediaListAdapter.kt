@@ -42,7 +42,7 @@ class MediaViewHolder(
             Glide.with(context)
                 .asGif()
                 .load(gifFile)
-                .placeholder(R.drawable.ic_launcher_background)
+                .placeholder(R.drawable.loading_white)
                 .error(R.drawable.magnifying_glass_icon) // Add an error placeholder image
                 .into(binding.mediaView)
         } else {

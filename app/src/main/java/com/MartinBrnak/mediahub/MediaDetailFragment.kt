@@ -53,7 +53,7 @@ class MediaDetailFragment : Fragment() {
                 Glide.with(requireContext())
                     .asGif()
                     .load(mediaFile)
-                    .placeholder(R.drawable.profile_icon)
+                    .placeholder(R.drawable.loading_white)
                     .error(R.drawable.magnifying_glass_icon)
                     .into(mediaImageView)
 
