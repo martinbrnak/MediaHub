@@ -47,15 +47,24 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val mediaRepository = MediaRepository.get()
+        val mediaListAdapter = MediaListAdapter(requireContext(), emptyList()) {}
+
+        binding.mediaGrid.layoutManager = GridLayoutManager(context, 2)
+        binding.mediaGrid.adapter = mediaListAdapter
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mediaListViewModel.mediaAll.collect { mediaAll ->
-                    binding.mediaGrid.adapter =
-                        MediaListAdapter(requireContext(), mediaAll) { mediaId ->
-                            findNavController().navigate(
-                                HomeFragmentDirections.showMediaDetail(mediaId)
-                            )
-                        }
+                mediaRepository.getMediaAll().collect { mediaList ->
+                    mediaListAdapter.updateMediaList(mediaList)
+
+                    if (mediaListAdapter.itemCount == 0) {
+                        binding.mediaGrid.visibility = View.GONE
+                        binding.welcomeMessage.visibility = View.VISIBLE
+                    } else {
+                        binding.mediaGrid.visibility = View.VISIBLE
+                        binding.welcomeMessage.visibility = View.GONE
+                    }
                 }
             }
         }

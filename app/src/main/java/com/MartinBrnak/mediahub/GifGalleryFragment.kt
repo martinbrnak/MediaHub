@@ -1,11 +1,15 @@
 package com.MartinBrnak.mediahub
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,6 +29,7 @@ class GifGalleryFragment : Fragment() {
         }
 
     private val gifGalleryViewModel: GifGalleryViewModel by viewModels()
+    private lateinit var searchBar: EditText
 
 
     override fun onCreateView(
@@ -40,6 +45,35 @@ class GifGalleryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Bind the search bar view
+        searchBar = view.findViewById(R.id.search_bar)
+
+        // Set up the search bar
+        searchBar.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = searchBar.text.toString().trim()
+                if (query.isNotEmpty()) {
+                    gifGalleryViewModel.searchGifs(query)
+                }
+                true
+            } else {
+                false
+            }
+        }
+
+        // Set up a text change listener on the search bar
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s?.toString()?.trim()?.isEmpty() == true) {
+                    // If the search bar text becomes empty, fetch trending GIFs
+                    gifGalleryViewModel.fetchTrendingGifs()
+                }
+            }
+        })
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

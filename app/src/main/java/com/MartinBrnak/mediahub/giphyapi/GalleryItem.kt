@@ -49,12 +49,6 @@ data class GalleryItem(
         val width: String,
         val size: String,
         val url: String,
-        @Json(name = "mp4_size") val mp4Size: String,
-        val mp4: String,
-        @Json(name = "webp_size") val webpSize: String,
-        val webp: String,
-        val frames: String,
-        val hash: String
     )
 
 }

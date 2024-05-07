@@ -60,7 +60,7 @@ class MediaViewHolder(
 
 class MediaListAdapter(
     private val context: Context,
-    private val mediaAll: List<Media>,
+    private var mediaAll: List<Media>,
     private val onMediaClicked: (mediaId: UUID) -> Unit
 ) : RecyclerView.Adapter<MediaViewHolder>() {
     override fun onCreateViewHolder(
@@ -70,6 +70,11 @@ class MediaListAdapter(
         val inflater = LayoutInflater.from(parent.context)
         val binding = MediaItemBinding.inflate(inflater, parent, false)
         return MediaViewHolder(binding, context)
+    }
+
+    fun updateMediaList(newMediaList: List<Media>) {
+        mediaAll = newMediaList
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: MediaViewHolder, position: Int) {

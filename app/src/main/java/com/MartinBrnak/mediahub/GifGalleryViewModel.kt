@@ -29,4 +29,28 @@ class GifGalleryViewModel : ViewModel() {
             }
         }
     }
+
+    fun fetchTrendingGifs() {
+        viewModelScope.launch {
+            try {
+                val items = gifRepository.fetchGifs()
+                Log.d(TAG, "Trending items received: $items")
+                _galleryItems.value = items
+            } catch (ex: Exception) {
+                Log.e(TAG, "Failed to fetch trending GIFs", ex)
+            }
+        }
+    }
+
+    fun searchGifs(query: String) {
+        viewModelScope.launch {
+            try {
+                val items = gifRepository.searchGifs(query)
+                Log.d(TAG, "Search results: $items")
+                _galleryItems.value = items
+            } catch (ex: Exception) {
+                Log.e(TAG, "Failed to search for GIFs", ex)
+            }
+        }
+    }
 }

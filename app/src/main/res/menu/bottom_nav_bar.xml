@@ -11,8 +11,8 @@
         android:icon="@drawable/magnifying_glass_icon"
         />
     <item
-        android:id="@+id/ProfileFragment"
-        android:title="Profile"
+        android:id="@+id/ImportFragment"
+        android:title="Import"
         android:icon="@drawable/profile_icon"/>
 
 </menu>

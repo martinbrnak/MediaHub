@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MediaHub</string>
+    <string name="welcome_message">Welcome to MediaHub! This is where your downloaded content will appear. Go to Explore or Import to add more media.</string>
+
 </resources>

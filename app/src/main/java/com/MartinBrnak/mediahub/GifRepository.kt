@@ -23,7 +23,9 @@ class GifRepository {
 
         giphyAPI = retrofit.create()
     }
+    suspend fun searchGifs(query: String): List<GalleryItem> =
+        giphyAPI.searchGifs(query).data
 
     suspend fun fetchGifs(): List<GalleryItem> =
-        giphyAPI.fetchGifs().data
+        giphyAPI.fetchTrendingGifs().data
 }

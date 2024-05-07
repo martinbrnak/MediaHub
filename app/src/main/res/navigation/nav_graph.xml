@@ -14,8 +14,8 @@
         android:id="@+id/nav_home"
         app:destination="@id/HomeFragment"></action>
     <action
-        android:id="@+id/nav_profile"
-        app:destination="@id/ProfileFragment">
+        android:id="@+id/nav_import"
+        app:destination="@id/ImportFragment">
     </action>
 
     <fragment
@@ -41,10 +41,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/ProfileFragment"
-        android:name="com.MartinBrnak.mediahub.ProfileFragment"
-        android:label="ProfileFragment"
-        tools:layout="@layout/profile_fragment">
+        android:id="@+id/ImportFragment"
+        android:name="com.MartinBrnak.mediahub.ImportFragment"
+        android:label="ImportFragment"
+        tools:layout="@layout/import_fragment">
     </fragment>
 
     <fragment
