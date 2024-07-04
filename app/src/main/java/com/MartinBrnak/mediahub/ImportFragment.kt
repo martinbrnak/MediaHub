@@ -19,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import com.MartinBrnak.mediahub.databinding.ImportFragmentBinding
-import com.hcr2bot.instagramvideosdownloader.InstaVideo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -88,11 +87,7 @@ class ImportFragment : Fragment() {
                     }
 
                 link.contains("instagram.com") -> {
-                    // Download Instagram Reel
-                    InstaVideo.downloadVideo(context, link, Environment.DIRECTORY_DOWNLOADS)
-
-
-
+                // Download Instagram Reel
                 }
 
 
